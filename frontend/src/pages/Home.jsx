@@ -22,6 +22,7 @@ export default function Home() {
     return (
         <Stack spacing={2}>
             <Typography variant="h4">Home</Typography>
+            {/* 기존 API 테스트 버튼 (필요 없다면 지워도 됨) */}
             <Typography>Server says: {message}</Typography>
             <Button onClick={fetchPing}>Call API</Button>
         </Stack>

@@ -12,6 +12,6 @@ export default function App() {
             <Box sx={{ my: 3 }}>
                 <Link to="/">Home</Link> | <Link to="/about">About</Link>
             </Box>
-        </Container>
+        </Container>///
     );
 }
