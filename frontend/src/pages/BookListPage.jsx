@@ -10,15 +10,60 @@ import {
     Box,
     Stack,
     Chip,
+    Alert,
 } from "@mui/material";
 import api from "../app/axios";
+
+const MOCK_BOOKS = [
+    {
+        bookId: "mock-1",
+        title: "프론트엔드 실전 핸드북",
+        author: "김코드",
+        category: "프로그래밍",
+        coverUrl:
+            "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=500&q=80",
+    },
+    {
+        bookId: "mock-2",
+        title: "데이터 과학으로 하는 의사결정",
+        author: "이분석",
+        category: "데이터",
+        coverUrl:
+            "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=500&q=80",
+    },
+    {
+        bookId: "mock-3",
+        title: "클린 코드 여정",
+        author: "박정리",
+        category: "소프트웨어 공학",
+        coverUrl:
+            "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&w=500&q=80",
+    },
+    {
+        bookId: "mock-4",
+        title: "AI Product Design",
+        author: "Alice Kim",
+        category: "UX/UI",
+        coverUrl:
+            "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=500&q=80",
+    },
+    {
+        bookId: "mock-5",
+        title: "서버리스 첫걸음",
+        author: "최백엔드",
+        category: "클라우드",
+        coverUrl:
+            "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=500&q=80",
+    },
+];
 
 function BookListPage() {
     const navigate = useNavigate();
 
     const [books, setBooks] = useState([]);
-    const [loading, setLoading] = useState(true);   // 로딩 상태
-    const [error, setError] = useState("");         // 에러 메시지
+    const [loading, setLoading] = useState(true); // 로딩 상태
+    const [error, setError] = useState(""); // 에러 메시지
+    const [usingMock, setUsingMock] = useState(false);
 
     async function fetchBooks() {
         try {
@@ -27,10 +72,14 @@ function BookListPage() {
 
             // API 스펙: { status, message, data: [...] }
             setBooks(res.data.data || []);
+            setError("");
+            setUsingMock(false);
         } catch (e) {
             // 404, 500 경우에 message 내려줄 거라 그거 사용
             const msg = e.response?.data?.message || "도서 목록을 불러오지 못했습니다.";
             setError(msg);
+            setBooks(MOCK_BOOKS);
+            setUsingMock(true);
         } finally {
             setLoading(false);
         }
@@ -41,18 +90,6 @@ function BookListPage() {
     }, []);
 
     if (loading) return <div style={{ padding: 20 }}>불러오는 중...</div>;
-    if (error)
-        return (
-            <Box sx={{ p: 4, textAlign: "center" }}>
-                <Typography color="error" fontWeight={700} gutterBottom>
-                    {error}
-                </Typography>
-                <Button variant="outlined" onClick={fetchBooks}>
-                    다시 시도하기
-                </Button>
-            </Box>
-        );
-
     return (
         <Box sx={{ p: { xs: 1, sm: 2 } }}>
             <Stack direction={{ xs: "column", sm: "row" }} justifyContent="space-between" mb={2} gap={2}>
@@ -73,6 +110,27 @@ function BookListPage() {
                     신규 도서 등록
                 </Button>
             </Stack>
+
+            {usingMock && (
+                <Alert severity="info" sx={{ mb: 2, borderRadius: 3 }}>
+                    서버 연결이 어려워 준비된 샘플 데이터를 보여주고 있어요. 네트워크가 복구되면
+                    다시 시도해 주세요.
+                </Alert>
+            )}
+            {error && !usingMock && (
+                <Alert
+                    severity="error"
+                    sx={{ mb: 2, borderRadius: 3 }}
+                    action=
+                        {
+                            <Button color="inherit" size="small" onClick={fetchBooks}>
+                                재시도
+                            </Button>
+                        }
+                >
+                    {error}
+                </Alert>
+            )}
 
             <Grid container spacing={2.5}>
                 {books.map((book) => (
