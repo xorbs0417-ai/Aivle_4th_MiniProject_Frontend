@@ -11,5 +11,5 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <CssBaseline />
             <RouterProvider router={router} />
         </ThemeProvider>
-    </React.StrictMode>
+    </React.StrictMode>,
 );

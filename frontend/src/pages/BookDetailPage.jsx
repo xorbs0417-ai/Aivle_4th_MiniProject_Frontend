@@ -1,6 +1,6 @@
 // src/pages/BookDetailPage.jsx
 import { useParams, useNavigate } from "react-router-dom";
-import { Container, Typography, Button, Paper } from "@mui/material";
+import { Container, Typography, Button, Paper, Stack, Chip, Divider } from "@mui/material";
 import { useEffect, useState } from "react";
 import api from "../app/axios";
 
@@ -33,34 +33,55 @@ export default function BookDetailPage() {
     if (!book) return <div style={{ padding: 20 }}>책을 찾을 수 없습니다.</div>;
 
     return (
-        <Container maxWidth="sm" sx={{ marginTop: 4 }}>
-            <Paper elevation={3} sx={{ padding: 3 }}>
-                {book.coverUrl && (
-                    <img
-                        src={book.coverUrl}
-                        alt={book.title}
-                        style={{ width: "100%", borderRadius: "4px", marginBottom: "20px" }}
-                    />
-                )}
+        <Container maxWidth="md" sx={{ marginTop: 4 }}>
+            <Paper
+                elevation={0}
+                sx={{
+                    p: { xs: 3, md: 4 },
+                    borderRadius: 4,
+                    border: "1px solid #e5e7eb",
+                    boxShadow: "0 16px 38px rgba(15, 23, 42, 0.1)",
+                }}
+            >
+                <Stack spacing={2.5}>
+                    {book.coverUrl ? (
+                        <img
+                            src={book.coverUrl}
+                            alt={book.title}
+                            style={{ width: "100%", borderRadius: "12px" }}
+                        />
+                    ) : null}
 
-                <Typography variant="h4" gutterBottom>
-                    {book.title}
-                </Typography>
-                <Typography variant="subtitle1" color="text.secondary" gutterBottom>
-                    {book.author} | {book.category}
-                </Typography>
+                    <Stack spacing={1}>
+                        <Chip
+                            label={book.category || "카테고리 미정"}
+                            color="primary"
+                            variant="outlined"
+                            sx={{ alignSelf: "flex-start" }}
+                        />
+                        <Typography variant="h4" fontWeight={800}>
+                            {book.title}
+                        </Typography>
+                        <Typography variant="subtitle1" color="text.secondary">
+                            {book.author}
+                        </Typography>
+                    </Stack>
 
-                <Typography variant="body1" paragraph sx={{ marginTop: 2 }}>
-                    {book.description}
-                </Typography>
+                    <Divider />
 
-                <Button
-                    variant="contained"
-                    onClick={() => navigate("/books")}
-                    sx={{ marginTop: 2 }}
-                >
-                    목록으로
-                </Button>
+                    <Typography variant="body1" color="text.primary" sx={{ whiteSpace: "pre-line" }}>
+                        {book.description || "등록된 설명이 없습니다."}
+                    </Typography>
+
+                    <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}>
+                        <Button variant="contained" onClick={() => navigate("/books")}>{
+                            "목록으로"
+                        }</Button>
+                        <Button variant="outlined" onClick={() => navigate(`/books/${book.bookId}`)}>
+                            새로고침
+                        </Button>
+                    </Stack>
+                </Stack>
             </Paper>
         </Container>
     );
