@@ -46,23 +46,6 @@ export default function BookFormPage() {
         setForm((prev) => ({ ...prev, [name]: value }));
     };
 
-    // 프롬프트 자동 생성: 폼 메타데이터 기반
-    function buildCoverPrompt({ title, author, category, description }) {
-        return `
-다음 도서 정보를 반영한 한국어 표지 이미지를 생성해줘.
-- 제목: ${title || "(미입력)"}
-- 저자: ${author || "(미입력)"}
-- 카테고리: ${category || "(미입력)"}
-- 소개/특징: ${description || "(없음)"}
-
-요구사항:
-- 텍스트는 최소화(가능하면 텍스트 없이 상징/개념적 비주얼)
-- 과장된 광고 톤 금지, 정보 중심, 정제된 스타일
-- 인상적이고 고품질의 일러스트/디지털 아트
-- 해상도: ${coverSize}
-`.trim();
-    }
-
     // ===== useEffect: 프롬프트 변화/토글에 따라 자동 표지 생성 =====
     useEffect(() => {
         if (!autoGenerateCover) return;

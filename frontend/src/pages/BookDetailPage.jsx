@@ -1,7 +1,7 @@
 // src/pages/BookDetailPage.jsx
 import { useParams, useNavigate } from "react-router-dom";
 import { Container, Typography, Button, Paper, Stack, Chip, Divider } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import api from "../app/axios";
 
 export default function BookDetailPage() {
@@ -12,77 +12,98 @@ export default function BookDetailPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
-    async function fetchBook() {
-        try {
-            const res = await api.get(`/books/${id}`);
-            setBook(res.data.data);
-        } catch (e) {
-            const msg = e.response?.data?.message || "도서 정보를 불러오지 못했습니다.";
-            setError(msg);
-        } finally {
-            setLoading(false);
-        }
-    }
+    const [deleting, setDeleting] = useState(false);
 
     useEffect(() => {
+        let mounted = true;
+        const controller = new AbortController();
+
+        async function fetchBook() {
+            try {
+                setLoading(true);
+                setError(null);
+                const res = await api.get(`/books/${id}`, { signal: controller.signal });
+                console.log(res);
+                setBook(res.data?.data ?? res.data); // 응답 형태에 맞게 조정
+            } catch (e) {
+                if (e.name !== "CanceledError") setError(e);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+
+
         fetchBook();
+        return () => {
+            mounted = false;
+            controller.abort();
+        };
     }, [id]);
+
+    const handleDelete = useCallback(async () => {
+        const ok = window.confirm('정말 삭제하시겠습니까?');
+        if (!ok) return;
+
+        try {
+            setDeleting(true);
+            await api.delete(`/books/${book.bookId}`);
+            alert('삭제되었습니다.');
+            navigate('/books'); // 삭제 후 목록으로
+        } catch (err) {
+            const msg = err?.response?.data?.message || err?.message || '삭제 실패';
+            alert(msg);
+        } finally {
+            setDeleting(false);
+        }
+    }, [id]);
+
+
 
     if (loading) return <div style={{ padding: 20 }}>불러오는 중...</div>;
     if (error) return <div style={{ padding: 20, color: "red" }}>{error}</div>;
     if (!book) return <div style={{ padding: 20 }}>책을 찾을 수 없습니다.</div>;
 
+
     return (
-        <Container maxWidth="md" sx={{ marginTop: 4 }}>
-            <Paper
-                elevation={0}
-                sx={{
-                    p: { xs: 3, md: 4 },
-                    borderRadius: 4,
-                    border: "1px solid #e5e7eb",
-                    boxShadow: "0 16px 38px rgba(15, 23, 42, 0.1)",
-                }}
-            >
-                <Stack spacing={2.5}>
-                    {book.coverUrl ? (
-                        <img
-                            src={book.coverUrl}
-                            alt={book.title}
-                            style={{ width: "100%", borderRadius: "12px" }}
-                        />
-                    ) : null}
+        <Container sx={{ py: 3 }}>
+            {book.coverUrl ? (
+                <img
+                    src={book.coverUrl}
+                    alt={book.title}
+                    style={{ width: 240, height: "auto", borderRadius: 4 }}
+                />
+            ) : null}
 
-                    <Stack spacing={1}>
-                        <Chip
-                            label={book.category || "카테고리 미정"}
-                            color="primary"
-                            variant="outlined"
-                            sx={{ alignSelf: "flex-start" }}
-                        />
-                        <Typography variant="h4" fontWeight={800}>
-                            {book.title}
-                        </Typography>
-                        <Typography variant="subtitle1" color="text.secondary">
-                            {book.author}
-                        </Typography>
-                    </Stack>
+            <Typography variant="h4" sx={{ mt: 2 }}>
+                {book.title}
+            </Typography>
+            <Typography variant="subtitle1" color="text.secondary">
+                {book.author}
+            </Typography>
+            <Typography sx={{ mt: 2 }}>
+                {book.description ?? "등록된 설명이 없습니다."}
+            </Typography>
 
-                    <Divider />
+            <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5} sx={{ mt: 3 }}>
+                <Button variant="contained" onClick={() => navigate("/books")}>
+                    목록으로
+                </Button>
+                <Button variant="outlined" onClick={() => navigate(`/books/modify/${book.bookId}`)}>
+                    수정
+                </Button>
+                <Button variant="outlined" color="error"
+                        onClick={handleDelete}
+                        disabled={deleting}
+                >
+                    {deleting ? '삭제 중…' : '삭제'}
+                </Button>
 
-                    <Typography variant="body1" color="text.primary" sx={{ whiteSpace: "pre-line" }}>
-                        {book.description || "등록된 설명이 없습니다."}
-                    </Typography>
-
-                    <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}>
-                        <Button variant="contained" onClick={() => navigate("/books")}>{
-                            "목록으로"
-                        }</Button>
-                        <Button variant="outlined" onClick={() => navigate(`/books/${book.bookId}`)}>
-                            새로고침
-                        </Button>
-                    </Stack>
-                </Stack>
-            </Paper>
+                <Button variant="outlined" onClick={() => navigate(`/books/${book.bookId}`)}>
+                    새로고침
+                </Button>
+            </Stack>
         </Container>
     );
+
 }
