@@ -11,6 +11,7 @@ import {
     Stack,
     Chip,
     Alert,
+    TextField,
 } from "@mui/material";
 import api from "../app/axios";
 
@@ -64,6 +65,8 @@ function BookListPage() {
     const [loading, setLoading] = useState(true); // 로딩 상태
     const [error, setError] = useState(""); // 에러 메시지
     const [usingMock, setUsingMock] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [selectedCategory, setSelectedCategory] = useState("전체");
 
     async function fetchBooks() {
         try {
@@ -88,6 +91,24 @@ function BookListPage() {
     useEffect(() => {
         fetchBooks();
     }, []);
+
+    const categories = [
+        "전체",
+        ...Array.from(new Set((books.length ? books : MOCK_BOOKS).map((book) => book.category || "카테고리 미정"))),
+    ];
+
+    const filteredBooks = books.filter((book) => {
+        const term = searchTerm.toLowerCase();
+        const matchesSearch =
+            !term ||
+            book.title?.toLowerCase().includes(term) ||
+            book.author?.toLowerCase().includes(term) ||
+            book.category?.toLowerCase().includes(term);
+
+        const matchesCategory = selectedCategory === "전체" || (book.category || "카테고리 미정") === selectedCategory;
+
+        return matchesSearch && matchesCategory;
+    });
 
     if (loading) return <div style={{ padding: 20 }}>불러오는 중...</div>;
     return (
@@ -132,8 +153,34 @@ function BookListPage() {
                 </Alert>
             )}
 
+            <Stack spacing={2} mb={3} direction="column">
+                <TextField
+                    label="제목, 저자 또는 카테고리 검색"
+                    placeholder="예) 클린 코드, 김코드, 데이터"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    fullWidth
+                />
+
+                <Stack direction="row" flexWrap="wrap" gap={1}>
+                    {categories.map((category) => {
+                        const selected = selectedCategory === category;
+                        return (
+                            <Chip
+                                key={category}
+                                label={category}
+                                color={selected ? "primary" : "default"}
+                                variant={selected ? "filled" : "outlined"}
+                                onClick={() => setSelectedCategory(category)}
+                                sx={{ borderRadius: 2 }}
+                            />
+                        );
+                    })}
+                </Stack>
+            </Stack>
+
             <Grid container spacing={2.5}>
-                {books.map((book) => (
+                {filteredBooks.map((book) => (
                     <Grid item xs={12} sm={6} md={4} key={book.bookId}>
                         <Card
                             onClick={() => navigate(`/books/${book.bookId}`)}
@@ -205,6 +252,22 @@ function BookListPage() {
                             }}
                         >
                             아직 등록된 도서가 없습니다. 첫 번째 도서를 등록해 보세요!
+                        </Box>
+                    </Grid>
+                )}
+                {books.length > 0 && filteredBooks.length === 0 && (
+                    <Grid item xs={12}>
+                        <Box
+                            sx={{
+                                p: 3,
+                                textAlign: "center",
+                                borderRadius: 3,
+                                border: "1px dashed #cbd5e1",
+                                color: "text.secondary",
+                                backgroundColor: "#f8fafc",
+                            }}
+                        >
+                            검색어나 카테고리에 맞는 도서가 없습니다. 다른 조건으로 시도해 보세요.
                         </Box>
                     </Grid>
                 )}
