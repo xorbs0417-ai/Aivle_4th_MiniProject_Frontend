@@ -152,6 +152,9 @@ export default function BookFormPage() {
                 author: form.authorName.trim(),           // 양쪽 키 지원
                 category: form.category?.trim() || null,
                 description: form.description?.trim() || null,
+                imageUrl: (coverUrl && coverUrl.trim()) ? coverUrl.trim() : "https://url.kr/etp2f7",
+
+            // imageUrl: coverUrl || null,
             };
             if (userId) payload.userId = userId;
 
@@ -162,7 +165,7 @@ export default function BookFormPage() {
             const bookId = extractBookId(createRes);
             if (!bookId) {
                 console.error("bookId 추출 실패. 전체 응답:", createRes?.data);
-                alert("도서는 등록되었지만 응답에서 도서 ID를 확인하지 못했습니다.");
+                // alert("도서는 등록되었지만 응답에서 도서 ID를 확인하지 못했습니다.");
                 navigate("/books");
                 return;
             }

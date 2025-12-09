@@ -68,18 +68,28 @@ function BookListPage() {
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("전체");
 
+
     async function fetchBooks() {
         try {
-            // 검색 조건 없으면 그냥 전체 조회
             const res = await api.get("/books");
-
             // API 스펙: { status, message, data: [...] }
-            setBooks(res.data.data || []);
+            // UI 카드가 기대하는 필드들로 안전하게 매핑
+                    const rows = Array.isArray(res?.data?.data) ? res.data.data : [];
+            const mapped = rows.map((b) => {
+                const imgUrl = b?.image?.originFileName || b?.imageUrl || "/images/"+b?.image?.modifiedFileName || "";
+                return {
+                    bookId: b?.bookId ?? b?.id ?? "",
+                    title: b?.title ?? "",
+                    author: b?.authorName ?? b?.author ?? "",   // UI는 author 사용
+                    category: b?.category ?? "카테고리 미정",
+                    coverUrl: imgUrl || "/images/ec9cd1ab-ab7e-4131-9cd3-dfdc3881443f.png",                     // UI는 coverUrl 사용
+                     };
+                });
+            setBooks(mapped);
             setError("");
             setUsingMock(false);
         } catch (e) {
-            // 404, 500 경우에 message 내려줄 거라 그거 사용
-            const msg = e.response?.data?.message || "도서 목록을 불러오지 못했습니다.";
+            const msg = e.response?.data?.message ?? "도서 목록을 불러오지 못했습니다.";
             setError(msg);
             setBooks(MOCK_BOOKS);
             setUsingMock(true);
@@ -87,6 +97,7 @@ function BookListPage() {
             setLoading(false);
         }
     }
+
 
     useEffect(() => {
         fetchBooks();

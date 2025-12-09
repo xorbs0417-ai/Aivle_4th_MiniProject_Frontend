@@ -6,6 +6,7 @@ import NotFound from '../pages/NotFound';
 import BookListPage from '../pages/BookListPage';
 import BookDetailPage from '../pages/BookDetailPage';
 import BookFormPage from '../pages/BookFormPage';
+import BookModifyPage from "../pages/BookModifyPage";
 
 const router = createBrowserRouter([
     {
@@ -21,6 +22,7 @@ const router = createBrowserRouter([
 
             // 2. 상세 페이지 (:id는 변수처럼 1, 2, 3 등 아무 숫자나 들어올 수 있다는 뜻)
             { path: 'books/:id', element: <BookDetailPage /> },
+            { path: 'books/modify/:id/', element: <BookModifyPage /> },
         ],
     },
 ]);
