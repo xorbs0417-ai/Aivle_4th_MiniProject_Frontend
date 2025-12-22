@@ -14,10 +14,9 @@ permissions:
     group: ec2-user
     mode: '0755'
 
+# appspec.yml 수정 예시
 hooks:
-  # 배포 단계별로 실행할 스크립트가 있다면 여기에 정의합니다.
-  # 만약 실행할 스크립트(.sh 파일)가 아직 없다면 이 hooks 섹션은 지워도 무방합니다.
   AfterInstall:
-    - location: scripts/deploy.sh     # 실제 파일 경로: root/scripts/deploy.sh
+    - location: deploy-scripts/application-start-hook.sh # 실제 폴더와 파일명으로 수정
       timeout: 300
-      runas: root
+      runas: ubuntu
