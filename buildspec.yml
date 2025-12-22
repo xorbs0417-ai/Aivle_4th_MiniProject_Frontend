@@ -20,9 +20,9 @@ phases:
     commands:
       - echo "Build completed on `date`"
 
-artifacts:
-  files:
-    - 'appspec.yml'             # 루트에 있는 appspec 파일 포함
-    - 'scripts/**/*'            # 스크립트 폴더 포함 (있을 경우)
-    - '**/*'                    # 그 외 빌드된 모든 파일 포함
-  base-directory: frontend/dist # Vite의 빌드 결과물 경로
+  artifacts:
+    files:
+      - 'appspec.yml'             # 루트에 있는 appspec 파일 포함
+      - 'scripts/**/*'            # 스크립트 폴더 포함 (있을 경우)
+      - '**/*'                    # 그 외 빌드된 모든 파일 포함
+    base-directory: frontend/dist # Vite의 빌드 결과물 경로
