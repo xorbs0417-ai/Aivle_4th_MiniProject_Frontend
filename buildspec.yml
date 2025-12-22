@@ -20,10 +20,10 @@ phases:
     commands:
       - echo "Build completed on `date`"
 
-  artifacts:
-    files:
-      - 'appspec.yml'             # 반드시 포함되어야 함
-      - 'scripts/**/*'            # 배포 스크립트 폴더가 있다면 포함
-      - 'frontend/dist/**/*'      # 실제 빌드된 결과물
-    # 만약 base-directory를 사용 중이라면, appspec.yml이 그 폴더 밖에 있어서 생기는 문제입니다.
-    # 파일을 모두 포함할 수 있도록 경로 설정을 주의하세요.
+artifacts:
+  files:
+    - 'appspec.yml'             # 반드시 포함되어야 함
+    - 'scripts/**/*'            # 배포 스크립트 폴더가 있다면 포함
+    - 'frontend/dist/**/*'      # 실제 빌드된 결과물
+  # 만약 base-directory를 사용 중이라면, appspec.yml이 그 폴더 밖에 있어서 생기는 문제입니다.
+  # 파일을 모두 포함할 수 있도록 경로 설정을 주의하세요.
