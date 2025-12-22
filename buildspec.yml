@@ -1,0 +1,26 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 20
+    commands:
+      - echo "Install phase"
+      - node -v && npm -v
+  pre_build:
+    commands:
+      - echo "Pre-build"
+      - cd frontend              # 이미지 확인 결과, 여기에 package.json이 있습니다.
+      - npm ci                   # npm install보다 빌드 환경에 최적화된 명령어입니다.
+  build:
+    commands:
+      - echo "Build"
+      - npm run build            # Vite 빌드 실행 (dist 폴더 생성)
+  post_build:
+    commands:
+      - echo "Build completed on `date`"
+
+artifacts:
+  files:
+    - '**/*'                     # 빌드된 모든 파일 포함
+  base-directory: frontend/dist  # Vite의 결과물인 dist 폴더를 배포 아티팩트로 지정
