@@ -1,22 +1,19 @@
 version: 0.0
 os: linux
 files:
-  # 빌드된 결과물(dist 폴더 내용물)을 어디에 복사할지 설정합니다.
   - source: /
     destination: /var/www/html
-    file_exists_behavior: OVERWRITE   # 기존 파일이 있으면 덮어씁니다.
+    file_exists_behavior: OVERWRITE
 
 permissions:
-  # 배포된 파일들의 소유자와 권한을 설정합니다.
   - object: /var/www/html
-    pattern: '**'
-    owner: ec2-user
-    group: ec2-user
+    pattern: "**"
+    owner: ec2-user  # 통일
+    group: ec2-user  # 통일
     mode: '0755'
 
-# appspec.yml 수정 예시
 hooks:
   AfterInstall:
-    - location: deploy-scripts/application-start-hook.sh # 실제 폴더와 파일명으로 수정
+    - location: deploy-scripts/application-start-hook.sh
       timeout: 300
-      runas: ubuntu
+      runas: ec2-user # 여기를 ubuntu에서 ec2-user로 수정!
