@@ -16,4 +16,4 @@ hooks:
   AfterInstall:
     - location: deploy-scripts/application-start-hook.sh
       timeout: 300
-      runas: ec2-user # 여기를 ubuntu에서 ec2-user로 수정!
+      runas: root
