@@ -8,8 +8,8 @@ files:
 permissions:
   - object: /var/www/html
     pattern: "**"
-    owner: ec2-user  # 통일
-    group: ec2-user  # 통일
+    owner: root  # 통일
+    group: root  # 통일
     mode: '0755'
 
 hooks:
