@@ -13,7 +13,7 @@ permissions:
     mode: '0755'
 
 hooks:
-  AfterInstall:
+  ApplicationStart:
     - location: deploy-scripts/application-start-hook.sh
       timeout: 300
       runas: root
